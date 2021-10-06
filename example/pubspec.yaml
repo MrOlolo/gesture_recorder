@@ -1,9 +1,9 @@
 name: simple_scroll
 description: A new Flutter project.
-publish_to: 'none'
+publish_to: "none"
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -15,8 +15,10 @@ dev_dependencies:
     sdk: flutter
   gesture_recorder:
     path: ../
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^1.0.4
   test: any
-  pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true

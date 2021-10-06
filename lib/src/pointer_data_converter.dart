@@ -15,7 +15,7 @@ Map<String, dynamic> serializePointerData(ui.PointerData data) {
       'timeStamp': data.timeStamp.inMicroseconds,
     if (data.change != ui.PointerChange.cancel) 'change': data.change.index,
     if (data.kind != ui.PointerDeviceKind.touch) 'kind': data.kind.index,
-    if (data.signalKind != null) 'signalKind': data.signalKind.index,
+    if (data.signalKind != null) 'signalKind': data.signalKind!.index,
     if (data.device != 0) 'device': data.device,
     if (data.pointerIdentifier != 0)
       'pointerIdentifier': data.pointerIdentifier,
@@ -51,36 +51,36 @@ ui.PointerData deserializePointerData(dynamic value) {
       ? json.decode(value) as Map<String, dynamic>
       : value as Map<String, dynamic>;
   return ui.PointerData(
-    timeStamp: Duration(microseconds: jsonObject['timeStamp'] as int ?? 0),
-    change: ui.PointerChange.values[jsonObject['change'] as int ?? 0],
-    kind: ui.PointerDeviceKind.values[jsonObject['kind'] as int ?? 0],
+    timeStamp: Duration(microseconds: jsonObject['timeStamp'] as int? ?? 0),
+    change: ui.PointerChange.values[jsonObject['change'] as int? ?? 0],
+    kind: ui.PointerDeviceKind.values[jsonObject['kind'] as int? ?? 0],
     signalKind: jsonObject.containsKey('signalKind')
         ? ui.PointerSignalKind.values[jsonObject['signalKind'] as int]
         : null,
-    device: jsonObject['device'] as int ?? 0,
-    pointerIdentifier: jsonObject['pointerIdentifier'] as int ?? 0,
-    physicalX: jsonObject['physicalX'] as double ?? 0.0,
-    physicalY: jsonObject['physicalY'] as double ?? 0.0,
-    physicalDeltaX: jsonObject['physicalDeltaX'] as double ?? 0.0,
-    physicalDeltaY: jsonObject['physicalDeltaY'] as double ?? 0.0,
-    buttons: jsonObject['buttons'] as int ?? 0,
-    obscured: jsonObject['obscured'] as bool ?? false,
-    synthesized: jsonObject['synthesized'] as bool ?? false,
-    pressure: jsonObject['pressure'] as double ?? 0.0,
-    pressureMin: jsonObject['pressureMin'] as double ?? 0.0,
-    pressureMax: jsonObject['pressureMax'] as double ?? 0.0,
-    distance: jsonObject['distance'] as double ?? 0.0,
-    distanceMax: jsonObject['distanceMax'] as double ?? 0.0,
-    size: jsonObject['size'] as double ?? 0.0,
-    radiusMajor: jsonObject['radiusMajor'] as double ?? 0.0,
-    radiusMinor: jsonObject['radiusMinor'] as double ?? 0.0,
-    radiusMin: jsonObject['radiusMin'] as double ?? 0.0,
-    radiusMax: jsonObject['radiusMax'] as double ?? 0.0,
-    orientation: jsonObject['orientation'] as double ?? 0.0,
-    tilt: jsonObject['tilt'] as double ?? 0.0,
-    platformData: jsonObject['platformData'] as int ?? 0,
-    scrollDeltaX: jsonObject['scrollDeltaX'] as double ?? 0.0,
-    scrollDeltaY: jsonObject['scrollDeltaY'] as double ?? 0.0,
+    device: jsonObject['device'] as int? ?? 0,
+    pointerIdentifier: jsonObject['pointerIdentifier'] as int? ?? 0,
+    physicalX: jsonObject['physicalX'] as double? ?? 0.0,
+    physicalY: jsonObject['physicalY'] as double? ?? 0.0,
+    physicalDeltaX: jsonObject['physicalDeltaX'] as double? ?? 0.0,
+    physicalDeltaY: jsonObject['physicalDeltaY'] as double? ?? 0.0,
+    buttons: jsonObject['buttons'] as int? ?? 0,
+    obscured: jsonObject['obscured'] as bool? ?? false,
+    synthesized: jsonObject['synthesized'] as bool? ?? false,
+    pressure: jsonObject['pressure'] as double? ?? 0.0,
+    pressureMin: jsonObject['pressureMin'] as double? ?? 0.0,
+    pressureMax: jsonObject['pressureMax'] as double? ?? 0.0,
+    distance: jsonObject['distance'] as double? ?? 0.0,
+    distanceMax: jsonObject['distanceMax'] as double? ?? 0.0,
+    size: jsonObject['size'] as double? ?? 0.0,
+    radiusMajor: jsonObject['radiusMajor'] as double? ?? 0.0,
+    radiusMinor: jsonObject['radiusMinor'] as double? ?? 0.0,
+    radiusMin: jsonObject['radiusMin'] as double? ?? 0.0,
+    radiusMax: jsonObject['radiusMax'] as double? ?? 0.0,
+    orientation: jsonObject['orientation'] as double? ?? 0.0,
+    tilt: jsonObject['tilt'] as double? ?? 0.0,
+    platformData: jsonObject['platformData'] as int? ?? 0,
+    scrollDeltaX: jsonObject['scrollDeltaX'] as double? ?? 0.0,
+    scrollDeltaY: jsonObject['scrollDeltaY'] as double? ?? 0.0,
   );
 }
 
@@ -89,18 +89,16 @@ ui.PointerData deserializePointerData(dynamic value) {
 /// The `timeOffset` value is subtraced from the timestamps in the json
 /// record.
 PointerEventRecord recordDecoder(
-  Map<String, dynamic> jsonObject,
-  final double devicePixelRatio, {
-    Duration timeOffset = Duration.zero
-  }) {
+    Map<String, dynamic> jsonObject, final double devicePixelRatio,
+    {Duration timeOffset = Duration.zero}) {
   return PointerEventRecord(
     Duration(microseconds: jsonObject['ts'] as int) - timeOffset,
     PointerEventConverter.expand(
-        <ui.PointerData>[
-          for (final dynamic item in jsonObject['events'] as List<dynamic>)
-            deserializePointerData(item),
-        ],
-        devicePixelRatio,
+      <ui.PointerData>[
+        for (final dynamic item in jsonObject['events'] as List<dynamic>)
+          deserializePointerData(item),
+      ],
+      devicePixelRatio,
     ).toList(),
   );
 }
@@ -112,8 +110,11 @@ PointerEventRecord recordDecoder(
 ///
 /// The `timeOffset` value is subtracted from the timestamps in the json record.
 /// Default value is to make the first event with timestamp [Duration.zero].
-List<PointerEventRecord> pointerEventRecordFromJson(String jsonString,
-    final double devicePixelRatio, {Duration timeOffset,}) {
+List<PointerEventRecord> pointerEventRecordFromJson(
+  String jsonString,
+  final double devicePixelRatio, {
+  Duration? timeOffset,
+}) {
   final List<Map<String, dynamic>> jsonObjects = <Map<String, dynamic>>[
     for (final dynamic item in json.decode(jsonString) as List<dynamic>)
       item as Map<String, dynamic>

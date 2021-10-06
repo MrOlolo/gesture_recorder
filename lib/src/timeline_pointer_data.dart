@@ -12,11 +12,11 @@ class PointerDataRecord {
   /// Filter the recorded timeline events
   PointerDataRecord.filterFrom(Timeline timeline)
       : _inputEvents = <Map<String, dynamic>>[
-          for (final TimelineEvent event in timeline.events)
+          for (final TimelineEvent event in timeline.events ?? [])
             if (event.name == 'Received PointerDataPacket')
               <String, dynamic>{
                 'ts': event.timestampMicros,
-                'events': event.arguments['events'],
+                'events': event.arguments?['events'],
               },
         ];
 
@@ -25,7 +25,7 @@ class PointerDataRecord {
   /// Write the input events to a json file.
   Future<void> writeToFile(
     String recordName, {
-    String destinationDirectory,
+    String? destinationDirectory,
     bool pretty = false,
     bool asDart = false,
   }) async {

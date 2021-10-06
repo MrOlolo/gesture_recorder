@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 import 'pointer_data_converter.dart';
 
-PointerDataPacketCallback _originalHandler;
+PointerDataPacketCallback? _originalHandler;
 
 /// Enables the gesture recording on the app to the [Timeline].
 ///
@@ -16,22 +16,21 @@ void enableGestureRecorder() {
   assert(WidgetsBinding.instance != null);
   assert(!kReleaseMode);
   assert(_originalHandler == null);
-  final Window window = WidgetsBinding.instance.window;
+  final SingletonFlutterWindow window = WidgetsBinding.instance!.window;
   _originalHandler = window.onPointerDataPacket;
   window.onPointerDataPacket = (PointerDataPacket packet) {
     Timeline.instantSync(
       'Received PointerDataPacket',
       arguments: <String, List<Map<String, dynamic>>>{
         'events': <Map<String, dynamic>>[
-          for(final PointerData datum in packet.data)
+          for (final PointerData datum in packet.data)
             serializePointerData(datum),
         ],
       },
     );
-    _originalHandler(packet);
+    _originalHandler?.call(packet);
   };
 }
-
 
 /// Stops the gesutre recording on the app.
 ///
@@ -39,6 +38,6 @@ void enableGestureRecorder() {
 void disableGestureRecorder() {
   assert(WidgetsBinding.instance != null);
   assert(_originalHandler != null);
-  WidgetsBinding.instance.window.onPointerDataPacket = _originalHandler;
+  WidgetsBinding.instance!.window.onPointerDataPacket = _originalHandler;
   _originalHandler = null;
 }
